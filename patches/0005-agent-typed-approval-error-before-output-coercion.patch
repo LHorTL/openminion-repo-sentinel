@@ -1,0 +1,60 @@
+Subject: [PATCH 5/5] fix(api): raise typed AgentApprovalRequiredError before output_type coercion
+
+When a turn using a Pydantic `output_type` pauses for policy confirmation
+(`approval_callback=None`) or is denied (`approval_callback` returns False),
+`run_turn()` returns plain-text confirmation messaging with
+`metadata["respond_kind"] == "policy_confirmation_prompt"`. Previously
+`Agent._run_once()` unconditionally passed that text to `_coerce_output()`,
+raising a misleading `AgentOutputValidationError`.
+diff --git a/src/openminion/api/agent.py b/src/openminion/api/agent.py
+--- a/src/openminion/api/agent.py
++++ b/src/openminion/api/agent.py
+@@ -45,6 +45,25 @@
+         super().__init__(message)
+         self.raw_text = raw_text
+         self.validation_error = validation_error
++
++
++class AgentApprovalRequiredError(RuntimeError):
++    """Raised when a structured-output turn stops awaiting policy approval or after denial."""
++
++    def __init__(
++        self,
++        message: str,
++        *,
++        raw_text: str,
++        denied: bool = False,
++        command_id: str | None = None,
++        metadata: dict[str, Any] | None = None,
++    ) -> None:
++        super().__init__(message)
++        self.raw_text = raw_text
++        self.denied = denied
++        self.command_id = command_id
++        self.metadata = dict(metadata or {})
+ 
+ 
+ @dataclass
+@@ -367,6 +386,22 @@
+         stats_value = raw_payload.get("stats", {})
+         if not isinstance(metadata_value, dict) or not isinstance(stats_value, dict):
+             raise RuntimeError("APIRuntime.run_turn() returned invalid result facts")
++        if (
++            self.output_type is not None
++            and self.output_type is not str
++            and (
++                metadata_value.get("respond_kind") == "policy_confirmation_prompt"
++                or metadata_value.get("brain_status") == "waiting_user"
++            )
++        ):
++            is_denied = "confirmation denied" in reply_text.lower() or "not run" in reply_text.lower()
++            raise AgentApprovalRequiredError(
++                reply_text or "Tool action requires policy approval",
++                raw_text=reply_text,
++                denied=is_denied,
++                command_id=str(metadata_value.get("pending_confirmation_command_id") or "").strip() or None,
++                metadata=metadata_value,
++            )
+         output = self._coerce_output(reply_text)
+         return AgentRunResult(
+             output=output,

@@ -1,0 +1,101 @@
+Subject: [PATCH 4/5] fix(config): default AgentProfileConfig.default_channel to console and replace dead wheel doc links
+
+1. Programmatic OpenMinionConfig.from_dict({"agents": {"openminion": {"provider": "openai"}}})
+   + APIRuntime.from_config(...) left default_channel="" and crashed on turn 1 with
+   `RuntimeError: inbound authenticity denied (reason=invalid_channel, mode=warn)`.
+   Aligning programmatic defaults with `openminion config init` ("console") fixes this.
+2. Replaces repo-relative `docs/reference/config-shape-migration-2026.md` (not shipped
+   in the PyPI wheel) with hosted docs URL + actionable hint.
+diff --git a/src/openminion/base/config/core.py b/src/openminion/base/config/core.py
+--- a/src/openminion/base/config/core.py
++++ b/src/openminion/base/config/core.py
+@@ -121,7 +121,7 @@
+ 
+     name: str = ""
+     role: str = ""
+-    default_channel: str = ""
++    default_channel: str = "console"
+     thinking: str = ""
+     provider: str = ""
+     default_act_profile: str = ""
+@@ -344,8 +344,10 @@
+     if not config.agents:
+         raise ConfigValidationError(
+             "OpenMinionConfig.agents is empty; no default agent is available. "
+-            "Post-CSC configs must populate the 'agents' catalog. "
+-            "See docs/reference/config-shape-migration-2026.md."
++            "Post-CSC configs must populate the 'agents' catalog (for example "
++            '{"agents": {"openminion": {"provider": "echo", "default_channel": "console"}}} '
++            "or run `openminion config init`). "
++            "See https://www.openminion.com/docs/."
+         )
+     if len(config.agents) == 1:
+         return next(iter(config.agents))
+@@ -397,8 +399,8 @@
+     if not config.agents:
+         raise UnknownProfileError(
+             "No agent profiles are configured; post-CSC configs must populate "
+-            "the 'agents' catalog. "
+-            "See docs/reference/config-shape-migration-2026.md."
++            "the 'agents' catalog (run `openminion config init`). "
++            "See https://www.openminion.com/docs/."
+         )
+ 
+     if requested_agent_id:
+diff --git a/src/openminion/base/config/parser/profiles.py b/src/openminion/base/config/parser/profiles.py
+--- a/src/openminion/base/config/parser/profiles.py
++++ b/src/openminion/base/config/parser/profiles.py
+@@ -68,13 +68,13 @@
+             raise ConfigError(
+                 f"Nested 'runtime_overrides' under agents.{agent_id} is no longer supported. "
+                 f"Flatten to 'agents.{agent_id}.*'. "
+-                "See docs/reference/config-shape-migration-2026.md."
++                "See https://www.openminion.com/docs/."
+             )
+         get = agent_config.get
+         kwargs: dict[str, Any] = dict(
+             name=agent_config.get("name", agent_id),
+             role=agent_config.get("role", ""),
+-            default_channel=agent_config.get("default_channel", ""),
++            default_channel=agent_config.get("default_channel") or "console",
+             thinking=agent_config.get("thinking", ""),
+             provider=agent_config.get("provider", ""),
+             default_act_profile=agent_config.get("default_act_profile", ""),
+diff --git a/src/openminion/base/config/parser/payload.py b/src/openminion/base/config/parser/payload.py
+--- a/src/openminion/base/config/parser/payload.py
++++ b/src/openminion/base/config/parser/payload.py
+@@ -62,7 +62,7 @@
+             "Legacy 'agent' top-level block is no longer supported. "
+             "Move fields to 'runtime.*' (system-wide) or 'agents.<id>.*' "
+             "(per-agent). "
+-            "See docs/reference/config-shape-migration-2026.md."
++            "See https://www.openminion.com/docs/."
+         )
+     system_payload = mapping_payload(payload, "system")
+     system_runtime_payload = mapping_payload(system_payload, "runtime")
+diff --git a/src/openminion/base/config/parser/runtime.py b/src/openminion/base/config/parser/runtime.py
+--- a/src/openminion/base/config/parser/runtime.py
++++ b/src/openminion/base/config/parser/runtime.py
+@@ -98,19 +98,19 @@
+         raise ConfigError(
+             "Nested 'runtime.brain.*' is no longer supported. "
+             "Flatten to 'runtime.*'. "
+-            "See docs/reference/config-shape-migration-2026.md."
++            "See https://www.openminion.com/docs/."
+         )
+     if isinstance(payload.get("thinking"), dict):
+         raise ConfigError(
+             "'runtime.thinking' as a policy object is no longer supported. "
+             "Rename to 'runtime.thinking_policy'. "
+-            "See docs/reference/config-shape-migration-2026.md."
++            "See https://www.openminion.com/docs/."
+         )
+     if isinstance(payload.get("providers"), dict):
+         raise ConfigError(
+             "'runtime.providers' as a policy object is no longer supported. "
+             "Rename to 'runtime.provider_policy'. "
+-            "See docs/reference/config-shape-migration-2026.md."
++            "See https://www.openminion.com/docs/."
+         )
+ 
+ 

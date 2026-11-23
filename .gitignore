@@ -7,4 +7,8 @@ dist/
 build/
 .env
 .openminion-state/
+.sentinel-state/
+.demo-state/
+triage-demo.md
+triage-report.md
 *.log

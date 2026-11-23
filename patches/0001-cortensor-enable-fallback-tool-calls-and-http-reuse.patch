@@ -1,0 +1,31 @@
+Subject: [PATCH 1/5] fix(cortensor): honor tool_call_strategy fallback parsing and reuse http_client
+
+Fixes two bugs in CortensorProvider (openminion==0.1.24):
+1. _parse_response_payload() hardcoded fallback_enabled=False while ignoring
+   tool_call_strategy, silently dropping all fallback JSON tool calls returned
+   by /api/v2/completions even though _build_completion_prompt() injects the
+   tool-calling JSON contract.
+2. _complete_via_openai_chat_mode() omitted http_client=http_client_for_config(...),
+   silently disabling HTTP connection reuse compared to _complete_via_completion_mode().
+diff --git a/src/openminion/modules/llm/providers/cortensor/adapter.py b/src/openminion/modules/llm/providers/cortensor/adapter.py
+--- a/src/openminion/modules/llm/providers/cortensor/adapter.py
++++ b/src/openminion/modules/llm/providers/cortensor/adapter.py
+@@ -275,6 +275,7 @@
+             ),
+             trace_metadata=request.metadata,
+             env=config.get("__env__"),
++            http_client=http_client_for_config(self._http_client, config),
+             telemetryctl=config.get("telemetryctl"),
+         )
+ 
+@@ -467,7 +468,9 @@
+             provider_name=self.name,
+             model_name=str(response_payload.get("model") or fallback_model),
+             allowed_tool_names=allowed_tool_names if request.tools else None,
+-            fallback_enabled=False,
++            fallback_enabled=bool(
++                request.tools and supports_fallback_tool_calling(tool_call_strategy)
++            ),
+             parser_plugin_selection=behavior_profile.parser_plugin_selection,
+             fallback_parser_policy=behavior_profile.fallback_parser_policy,
+         )

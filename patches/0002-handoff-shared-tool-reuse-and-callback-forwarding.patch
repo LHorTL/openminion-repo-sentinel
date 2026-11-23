@@ -1,0 +1,131 @@
+Subject: [PATCH 2/5] fix(api): validate shared-runtime handoffs early, deduplicate nested @tools, and forward turn callbacks
+
+Fixes three Handoff/subagent runtime issues in openminion==0.1.24:
+1. Fail fast at Agent.__init__ when a Handoff target with decorated @tools shares the
+   parent's APIRuntime instead of silently failing mid-turn with an opaque EXEC_ERROR.
+2. Skip already-registered tools in _register_tools_for_run() (checking registry.get())
+   so nested same-thread agents sharing a @tool do not crash with ToolRuntimeError.
+3. Propagate approval_callback, timeout_seconds, cancel_event, and on_delta into
+   handoff.target.run()/run_stream() via ContextVar.
+diff --git a/src/openminion/api/agent.py b/src/openminion/api/agent.py
+--- a/src/openminion/api/agent.py
++++ b/src/openminion/api/agent.py
+@@ -4,6 +4,7 @@
+ 
+ from collections.abc import Awaitable
+ from contextlib import ExitStack, nullcontext
++from contextvars import ContextVar
+ from dataclasses import dataclass, field
+ import json
+ from threading import Event
+@@ -30,6 +31,10 @@
+ OutputT = TypeVar("OutputT")
+ ToolInput = str | Callable[..., Any]
+ _ApprovalCallback = Callable[[str, dict[str, Any], str], bool | Awaitable[bool]]
++_ACTIVE_TURN_HOOKS: ContextVar[dict[str, Any] | None] = ContextVar(
++    "openminion_active_turn_hooks",
++    default=None,
++)
+ 
+ 
+ class AgentOutputValidationError(ValueError):
+@@ -128,6 +133,21 @@
+             )
+ 
+             _validate_unique_resolved_names(self.handoffs)
++            if self._runtime is not None:
++                for handoff in self.handoffs:
++                    target = handoff.target
++                    target_rt = getattr(target, "_runtime", None)
++                    target_has_temp_tools = bool(
++                        getattr(target, "handoffs", None)
++                        or getattr(target, "_tool_family_builders", None)
++                    )
++                    if target_rt is self._runtime and target_has_temp_tools:
++                        raise ValueError(
++                            f'Handoff target "{handoff.resolved_name()}" declares temporary '
++                            "decorated tools on the parent's shared APIRuntime; construct a "
++                            "separate APIRuntime for the Handoff target to avoid cross-thread "
++                            "registration deadlocks."
++                        )
+             self.handoff_tool_names: list[str] = [
+                 build_delegate_tool(h).name for h in self.handoffs
+             ]
+@@ -222,9 +242,12 @@
+                     or ()
+                 )
+                 for spec in derive_tool_specs(family):
+-                    spec.prompt_visible_runtime_name = True
+-                    registry.add(spec)
+-                    registered.append(spec.name)
++                    try:
++                        registry.get(spec.name)
++                    except KeyError:
++                        spec.prompt_visible_runtime_name = True
++                        registry.add(spec)
++                        registered.append(spec.name)
+             action_policy = getattr(self._runtime, "action_policy", None)
+             if action_policy is not None:
+                 risk_scope.enter_context(
+@@ -345,13 +368,24 @@
+                         ) -> bool | Awaitable[bool]:
+                             return approval_callback(tool_name, args, approval_id)
+ 
+-                    raw = runtime.run_turn(
+-                        payload=payload,
+-                        progress_callback=on_delta,
+-                        approval_callback=internal_approval_callback,
+-                        cancel_event=cancel_event,
+-                        trusted_subagent_context=run_context,
+-                    )
++                    hooks_token = _ACTIVE_TURN_HOOKS.set(
++                        {
++                            "approval_callback": approval_callback,
++                            "timeout_seconds": timeout_seconds,
++                            "cancel_event": cancel_event,
++                            "on_delta": on_delta,
++                        }
++                    )
++                    try:
++                        raw = runtime.run_turn(
++                            payload=payload,
++                            progress_callback=on_delta,
++                            approval_callback=internal_approval_callback,
++                            cancel_event=cancel_event,
++                            trusted_subagent_context=run_context,
++                        )
++                    finally:
++                        _ACTIVE_TURN_HOOKS.reset(hooks_token)
+                 finally:
+                     self._unregister_tools(
+                         registry, registered_tools, registered_profiles
+diff --git a/src/openminion/api/handoff.py b/src/openminion/api/handoff.py
+--- a/src/openminion/api/handoff.py
++++ b/src/openminion/api/handoff.py
+@@ -166,7 +166,25 @@
+     description = handoff.resolved_description()
+ 
+     def _handler_fn(message: str) -> dict[str, Any]:
+-        result = handoff.target.run(message)
++        from openminion.api.agent import _ACTIVE_TURN_HOOKS
++
++        hooks = _ACTIVE_TURN_HOOKS.get() or {}
++        on_delta = hooks.get("on_delta")
++        if on_delta is not None:
++            result = handoff.target.run_stream(
++                message,
++                on_delta=on_delta,
++                timeout_seconds=hooks.get("timeout_seconds"),
++                approval_callback=hooks.get("approval_callback"),
++                cancel_event=hooks.get("cancel_event"),
++            )
++        else:
++            result = handoff.target.run(
++                message,
++                timeout_seconds=hooks.get("timeout_seconds"),
++                approval_callback=hooks.get("approval_callback"),
++                cancel_event=hooks.get("cancel_event"),
++            )
+         raw_output = result.output
+         output_value = (
+             raw_output.model_dump(mode="json")
