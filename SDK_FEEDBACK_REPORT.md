@@ -57,7 +57,7 @@ Every finding below was empirically reproduced against unmodified **`openminion=
   ```text
   [] {'tool_call_source': 'none', 'tool_call_native_call_count': 0, 'tool_call_attempted_fallback_sources': [], 'tool_call_skipped_fallback_sources': ['choice.text']}
   ```
-- **Ready-to-Apply Patch**: [`patches/0001-cortensor-enable-fallback-tool-calls-and-http-reuse.patch`](./patches/0001-cortensor-enable-fallback-tool-calls-and-http-reuse.patch)
+- **Ready-to-Apply Patch & Live Upstream PR**: [`patches/0001-cortensor-enable-fallback-tool-calls-and-http-reuse.patch`](./patches/0001-cortensor-enable-fallback-tool-calls-and-http-reuse.patch) — **Submitted upstream: [OpenMinion/openminion#862](https://github.com/openminion/openminion/pull/862)** (red-first proof + 4 unit tests + `169 passed` on `dev`).
 
 ---
 
@@ -94,7 +94,7 @@ Every finding below was empirically reproduced against unmodified **`openminion=
   RuntimeError: inbound authenticity denied (reason=invalid_channel, mode=warn)
   ```
   (Reproduced automatically in `tests/test_sentinel.py::test_repro_programmatic_from_config_missing_default_channel_bug`.)
-- **Ready-to-Apply Patch**: [`patches/0004-config-default-channel-and-wheel-doc-url.patch`](./patches/0004-config-default-channel-and-wheel-doc-url.patch)
+- **Ready-to-Apply Patch & Live Upstream PR**: [`patches/0004-config-default-channel-and-wheel-doc-url.patch`](./patches/0004-config-default-channel-and-wheel-doc-url.patch) — **Submitted upstream (`default_channel="console"`): [OpenMinion/openminion#864](https://github.com/openminion/openminion/pull/864)** (red-first proof + 2 regression tests + `85 passed` on `dev`).
 
 ---
 
@@ -105,7 +105,7 @@ Every finding below was empirically reproduced against unmodified **`openminion=
 - **Actual Result on Windows 11** (verified on fresh `openminion config init` followed by `openminion doctor --json` — exit code `0`, `summary.ok=True`, `warn=6`):
   1. **3 Windows false positives**: `security.filesystem.config_permissions` (`0o666`), `security.filesystem.storage_permissions` (`0o777`), and `security.filesystem.memory_permissions` (`0o777`) all fire `"Path is world-writable"` with remediation `"Restrict permissions (for example chmod 750 on dirs, 640 on files)."` because CPython on Windows synthesizes `st_mode` from the DOS read-only bit, never NTFS ACLs.
   2. **Fresh identity warning**: `identity.bundle` immediately emits `status="warn"` (`"Identity profile is missing in IdentityCtl for agent 'openminion'."`) with `details.bundle_diagnostics.errors: ["identity bundle root not found: ..."]` even right after `openminion config init`.
-- **Ready-to-Apply Patch**: [`patches/0003-policy-windows-skip-posix-world-writable-check.patch`](./patches/0003-policy-windows-skip-posix-world-writable-check.patch)
+- **Ready-to-Apply Patch & Live Upstream PR**: [`patches/0003-policy-windows-skip-posix-world-writable-check.patch`](./patches/0003-policy-windows-skip-posix-world-writable-check.patch) — **Submitted upstream: [OpenMinion/openminion#863](https://github.com/openminion/openminion/pull/863)** (red-first proof + 3 cross-platform unit tests + `48 passed` on `dev`).
 
 ---
 
@@ -128,4 +128,4 @@ Every finding below was empirically reproduced against unmodified **`openminion=
 - **Source Locations**:
   - 7 references to `docs/reference/config-shape-migration-2026.md`: `base/config/core.py:348,401`, `base/config/parser/payload.py:65`, `base/config/parser/profiles.py:71`, `base/config/parser/runtime.py:101,107,113` (not packaged inside the PyPI wheel — 0 matching files in `site-packages/`).
   - `cli/commands/config.py:189,566` (`config import` parses YAML via `yaml.safe_load`) vs `base/config/io.py:59-61` (`APIRuntime.from_config_path` parses JSON only and raises `ConfigError: Invalid JSON config`).
-- **Ready-to-Apply Patch**: [`patches/0004-config-default-channel-and-wheel-doc-url.patch`](./patches/0004-config-default-channel-and-wheel-doc-url.patch) (replaces all 7 dead wheel-relative doc references with `https://www.openminion.com/docs/`).
+- **Ready-to-Apply Patch**: [`patches/0004-config-default-channel-and-wheel-doc-url.patch`](./patches/0004-config-default-channel-and-wheel-doc-url.patch) (replaces all 7 dead wheel-relative doc references with `https://www.openminion.com/docs/`; note upstream [PR #864](https://github.com/openminion/openminion/pull/864) isolates the `default_channel="console"` fix cleanly without altering the 5 existing `test_config_shape_resolution.py` migration-path assertions).

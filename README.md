@@ -1,6 +1,12 @@
-# RepoTriageSentinel (`openminion==0.1.24`)
+# RepoTriageSentinel v2.0.0 (`openminion==0.1.24`)
 
 **Multi-Agent Git Release-Readiness, Secret-Leak & Cross-Run Regression Triage Agent** built for **Cortensor Hackathon #5** using the **OpenMinion 0.1 Python SDK (`openminion==0.1.24`)**.
+
+- **HD Walkthrough Demo Video (`v2.0.0`, 1280×720 H.264)**: [Download / Watch `repotriagesentinel-v2-demo.mp4`](https://github.com/LHorTL/openminion-repo-sentinel/releases/download/v2.0.0/repotriagesentinel-v2-demo.mp4) ([GitHub Release `v2.0.0`](https://github.com/LHorTL/openminion-repo-sentinel/releases/tag/v2.0.0))
+- **Live Upstream Fix PRs on [`OpenMinion/openminion`](https://github.com/OpenMinion/openminion)** (forked at [`LHorTL/openminion`](https://github.com/LHorTL/openminion) & starred):
+  - [**PR #862**](https://github.com/openminion/openminion/pull/862) (`S-Tier / Cortensor`): `fix(llm): honor tool_call_strategy fallback parsing and http_client reuse in CortensorProvider` (`169 passed`)
+  - [**PR #863**](https://github.com/openminion/openminion/pull/863) (`A-Tier / Windows`): `fix(policy): skip POSIX S_IWOTH world-writable check on Windows` (`48 passed`)
+  - [**PR #864**](https://github.com/openminion/openminion/pull/864) (`A-Tier / Config DX`): `fix(config): default AgentProfileConfig.default_channel to console` (`85 passed`)
 
 ---
 
@@ -43,14 +49,14 @@ CLI / run_repo_triage()
 
 ---
 
-## OpenMinion 0.1.24 Source-Verified Bug Report & Ready-to-Apply Patches
+## OpenMinion 0.1.24 Source-Verified Bug Report & Live Upstream Fix PRs
 
-See **[SDK_FEEDBACK_REPORT.md](./SDK_FEEDBACK_REPORT.md)** and **[patches/README.md](./patches/README.md)** for **7 source-verified findings** and **5 `git apply`-verified unified patches** against `OpenMinion/openminion` (`v0.1.24`), including:
-- **S-Tier Cortensor Bug**: `CortensorProvider` hardcodes `fallback_enabled=False` (`cortensor/adapter.py:470`), silently dropping all `/api/v2/completions` fallback tool calls + missing `http_client` reuse (`:261-279`).
-- **S-Tier Handoff Bug**: Shared-runtime `Handoff` silent construction / swallowed `EXEC_ERROR`, same-thread shared-`@tool` crash, and dropped `approval_callback`/`timeout_seconds`/`cancel_event`/`on_delta`.
-- **A-Tier Typed Output Bug**: `Agent._run_once()` runs `_coerce_output()` on plain-text policy denial/confirmation prompts instead of raising a typed approval error.
-- **A-Tier Programmatic Config Bug**: `AgentProfileConfig.default_channel=""` crashes `APIRuntime.from_config(...)` on turn 1 (`inbound authenticity denied`).
-- **A-Tier Windows Bug**: `openminion doctor` emits 3 false-positive `Path is world-writable (0o666/0o777)` / `chmod` warnings on Windows.
+See **[SDK_FEEDBACK_REPORT.md](./SDK_FEEDBACK_REPORT.md)** and **[patches/README.md](./patches/README.md)** for **7 source-verified findings**, **5 `git apply`-verified unified patches**, and **3 live upstream Fix PRs** submitted to `OpenMinion/openminion` (`dev`):
+- **S-Tier Cortensor Bug ([Upstream PR #862](https://github.com/openminion/openminion/pull/862))**: `CortensorProvider` hardcodes `fallback_enabled=False` (`cortensor/adapter.py:470`), silently dropping all `/api/v2/completions` fallback tool calls + missing `http_client` reuse (`:261-279`).
+- **S-Tier Handoff Bug (Patch `0002`)**: Shared-runtime `Handoff` silent construction / swallowed `EXEC_ERROR`, same-thread shared-`@tool` crash, and dropped `approval_callback`/`timeout_seconds`/`cancel_event`/`on_delta`.
+- **A-Tier Typed Output Bug (Patch `0005`)**: `Agent._run_once()` runs `_coerce_output()` on plain-text policy denial/confirmation prompts instead of raising a typed approval error.
+- **A-Tier Programmatic Config Bug ([Upstream PR #864](https://github.com/openminion/openminion/pull/864))**: `AgentProfileConfig.default_channel=""` crashes `APIRuntime.from_config(...)` on turn 1 (`inbound authenticity denied`).
+- **A-Tier Windows Bug ([Upstream PR #863](https://github.com/openminion/openminion/pull/863))**: `openminion doctor` emits 3 false-positive `Path is world-writable (0o666/0o777)` / `chmod` warnings on Windows.
 
 ---
 
