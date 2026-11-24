@@ -1,1 +1,437 @@
-<!doctype html><meta charset=utf-8><title>RepoTriageSentinel v2.0.0 Demo</title><body style="background:#0b1020;color:#e2e8f0;font-family:system-ui;text-align:center;padding:32px"><h1>RepoTriageSentinel v2.0.0 — OpenMinion 0.1.24 Demo</h1><video src="./repotriagesentinel-v2-demo.mp4" controls autoplay muted playsinline style="max-width:960px;width:100%;border-radius:12px"></video><p><a style="color:#38bdf8" href="https://github.com/LHorTL/openminion-repo-sentinel">GitHub Repository</a></p></body>
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RepoTriageSentinel v2.0.0 — OpenMinion 0.1.24 Multi-Agent Release Triage | Cortensor #5</title>
+    <meta
+      name="description"
+      content="Multi-Agent Git Release-Readiness, Secret-Leak & Cross-Run Regression Triage Agent built on OpenMinion 0.1.24 for Cortensor Hackathon #5."
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <!-- Identity Header -->
+      <header class="topbar">
+        <div class="brand">
+          <div class="brand-accent-bar" aria-hidden="true"></div>
+          <div>
+            <h1 class="brand-title">
+              RepoTriageSentinel
+              <span class="badge badge-accent mono">v2.0.0 · openminion==0.1.24</span>
+            </h1>
+            <p class="brand-sub">
+              Multi-Agent Git Release-Readiness, Secret-Leak &amp; Cross-Run Regression Triage Agent · Cortensor Hackathon #5
+            </p>
+          </div>
+        </div>
+
+        <div class="topbar-links">
+          <a
+            class="btn"
+            href="https://github.com/LHorTL/openminion-repo-sentinel/blob/main/SDK_FEEDBACK_REPORT.md"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            SDK Feedback Report
+          </a>
+          <a
+            class="btn"
+            href="https://github.com/LHorTL/openminion-repo-sentinel/releases/tag/v2.0.0"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Release v2.0.0
+          </a>
+          <a
+            class="btn btn-primary"
+            href="https://github.com/LHorTL/openminion-repo-sentinel"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            GitHub Repository
+          </a>
+        </div>
+      </header>
+
+      <!-- Unified Hairline KPI Strip -->
+      <section class="kpi-grid" aria-label="Verification Metrics">
+        <div class="kpi-cell">
+          <div class="kpi-label">Automated E2E Suite</div>
+          <div class="kpi-value">11 / 11 PASS</div>
+          <div class="kpi-sub">unittest · policy + handoff + MemoryBundle</div>
+        </div>
+        <div class="kpi-cell">
+          <div class="kpi-label">Upstream OpenMinion PRs</div>
+          <div class="kpi-value">3 Live PRs</div>
+          <div class="kpi-sub">#862 · #863 · #864 (18/18 CI green)</div>
+        </div>
+        <div class="kpi-cell">
+          <div class="kpi-label">SDK Audit &amp; Patches</div>
+          <div class="kpi-value">7 Bugs · 5 Patches</div>
+          <div class="kpi-sub">git apply --check + py_compile verified</div>
+        </div>
+        <div class="kpi-cell">
+          <div class="kpi-label">Tool Privilege Model</div>
+          <div class="kpi-value">Least-Privilege</div>
+          <div class="kpi-sub">5 READ_ONLY · 1 approval-gated write</div>
+        </div>
+      </section>
+
+      <!-- HD Demo Walkthrough & Architecture -->
+      <section class="section-block">
+        <div class="section-header">
+          <div>
+            <h2 class="section-title">HD Walkthrough Demo &amp; OpenMinion 0.1.24 Runtime Pipeline</h2>
+            <p class="section-sub">
+              Real programmatic <code>APIRuntime</code>, streaming <code>run_stream()</code>, peer <code>Handoff</code>, bounded <code>subagent()</code>, and cross-run <code>MemoryBundle</code> persistence.
+            </p>
+          </div>
+          <span class="badge badge-ok">1280×720 H.264 LIVE</span>
+        </div>
+
+        <div class="grid-2">
+          <div class="video-frame">
+            <div id="videoStage" class="video-stage">
+              <button
+                type="button"
+                id="btnPlayDemo"
+                class="video-poster-btn"
+                aria-label="Play 78-second RepoTriageSentinel v2.0.0 HD walkthrough video"
+              >
+                <span class="poster-kicker mono">1280×720 H.264 · 78s WALKTHROUGH</span>
+                <span class="poster-play-circle" aria-hidden="true">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                    <polygon points="7,4 20,12 7,20"></polygon>
+                  </svg>
+                </span>
+                <span class="poster-title">Click to Play 78s HD Walkthrough</span>
+                <span class="poster-sub mono">
+                  Live OpenMinion 0.1.24 Handoff · MemoryBundle Cross-Run Diff · 11/11 Tests PASS
+                </span>
+              </button>
+            </div>
+            <div class="video-caption">
+              <span class="mono">repotriagesentinel-v2-demo.mp4 · 1280×720 H.264</span>
+              <a
+                href="https://github.com/LHorTL/openminion-repo-sentinel/releases/download/v2.0.0/repotriagesentinel-v2-demo.mp4"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Download Direct MP4 ↗
+              </a>
+            </div>
+          </div>
+
+          <div class="pipeline-list" aria-label="Runtime Stages">
+            <div class="pipeline-step">
+              <span class="step-num">1</span>
+              <div>
+                <div class="step-title">Programmatic Runtime &amp; MemoryBundle Load</div>
+                <div class="step-desc">
+                  Initializes <code>OpenMinionConfig.from_dict()</code> + <code>APIRuntime.from_config()</code> (zero CLI shell-out) and imports prior baseline snapshots via <code>load_bundle()</code> / <code>import_bundle()</code>.
+                </div>
+              </div>
+            </div>
+            <div class="pipeline-step">
+              <span class="step-num">2</span>
+              <div>
+                <div class="step-title">Least-Privilege Read-Only Tool Execution</div>
+                <div class="step-desc">
+                  Streams deltas via <code>Agent[str, ReleaseTriageReport].run_stream()</code> across <code>inspect_git_repo</code>, <code>scan_secret_leaks</code>, and <code>check_release_readiness</code> with zero approval prompts.
+                </div>
+              </div>
+            </div>
+            <div class="pipeline-step">
+              <span class="step-num">3</span>
+              <div>
+                <div class="step-title">Peer Handoff &amp; Bounded Subagent</div>
+                <div class="step-desc">
+                  Delegates deep <code>.env</code>/key/Dockerfile <code>:latest</code> audits to isolated peer <code>security_specialist</code> (<code>SecurityAuditVerdict</code>) and generates <code>ReleaseBrief</code> via <code>subagent()</code>.
+                </div>
+              </div>
+            </div>
+            <div class="pipeline-step">
+              <span class="step-num">4</span>
+              <div>
+                <div class="step-title">Approval-Gated Write &amp; Cross-Run Diff</div>
+                <div class="step-desc">
+                  Guards <code>write_triage_report</code> (<code>dangerous=True</code>) behind <code>approval_callback</code> + <code>scoped_write_root()</code> traversal containment, then exports <code>triage_memory_bundle.json</code>.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Live Upstream Fix PRs & Verified SDK Patches -->
+      <section class="section-block">
+        <div class="section-header">
+          <div>
+            <h2 class="section-title">Live Upstream Fix PRs on OpenMinion/openminion &amp; SDK Patch Archive</h2>
+            <p class="section-sub">
+              Source-verified root-cause fixes discovered while building against <code>openminion==0.1.24</code> — all 3 open PRs are <code>MERGEABLE</code> with <code>18/18</code> CI checks green.
+            </p>
+          </div>
+          <span class="badge badge-ok">3 / 3 PRs CI GREEN</span>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Upstream PR / Patch</th>
+                <th>Severity</th>
+                <th>Target Module</th>
+                <th>Upstream Tests</th>
+                <th>Root-Cause Fix Summary</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="mono">
+                  <a href="https://github.com/openminion/openminion/pull/862" target="_blank" rel="noopener noreferrer">
+                    PR #862 ↗
+                  </a>
+                  · Patch 0001
+                </td>
+                <td><span class="badge badge-err">S-TIER · CORTENSOR</span></td>
+                <td><code>cortensor/adapter.py</code></td>
+                <td class="mono">169 passed</td>
+                <td class="wrap-cell">
+                  Replaces hardcoded <code>fallback_enabled=False</code> (:470) with <code>supports_fallback_tool_calling()</code> so Cortensor <code>/api/v2/completions</code> tool calls parse; adds <code>http_client</code> reuse (:261–279).
+                </td>
+              </tr>
+              <tr>
+                <td class="mono">
+                  <a href="https://github.com/openminion/openminion/pull/863" target="_blank" rel="noopener noreferrer">
+                    PR #863 ↗
+                  </a>
+                  · Patch 0003
+                </td>
+                <td><span class="badge badge-warn">A-TIER · WINDOWS</span></td>
+                <td><code>policy/diagnostics/security.py</code></td>
+                <td class="mono">48 passed</td>
+                <td class="wrap-cell">
+                  Skips POSIX <code>stat.S_IWOTH</code> checks on Windows (<code>os.name == "nt"</code>), eliminating 3 false-positive world-writable <code>openminion doctor</code> warnings.
+                </td>
+              </tr>
+              <tr>
+                <td class="mono">
+                  <a href="https://github.com/openminion/openminion/pull/864" target="_blank" rel="noopener noreferrer">
+                    PR #864 ↗
+                  </a>
+                  · Patch 0004
+                </td>
+                <td><span class="badge badge-warn">A-TIER · CONFIG DX</span></td>
+                <td><code>base/config/core.py</code></td>
+                <td class="mono">85 passed</td>
+                <td class="wrap-cell">
+                  Defaults <code>AgentProfileConfig.default_channel</code> to <code>"console"</code>, preventing turn-1 <code>inbound authenticity denied</code> under programmatic <code>APIRuntime.from_config()</code>.
+                </td>
+              </tr>
+              <tr>
+                <td class="mono">
+                  <a href="https://github.com/LHorTL/openminion-repo-sentinel/tree/main/patches" target="_blank" rel="noopener noreferrer">
+                    Patch 0002 ↗
+                  </a>
+                </td>
+                <td><span class="badge badge-err">S-TIER · SDK CORE</span></td>
+                <td><code>api/agent.py, handoff.py</code></td>
+                <td class="mono">git apply OK</td>
+                <td class="wrap-cell">
+                  Fails fast when shared-runtime Handoff targets declare temp <code>@tool</code>s and forwards <code>approval_callback</code>, <code>timeout_seconds</code>, <code>cancel_event</code>, and <code>on_delta</code>.
+                </td>
+              </tr>
+              <tr>
+                <td class="mono">
+                  <a href="https://github.com/LHorTL/openminion-repo-sentinel/tree/main/patches" target="_blank" rel="noopener noreferrer">
+                    Patch 0005 ↗
+                  </a>
+                </td>
+                <td><span class="badge badge-neutral">A-TIER · TYPED API</span></td>
+                <td><code>api/agent.py</code></td>
+                <td class="mono">git apply OK</td>
+                <td class="wrap-cell">
+                  Raises typed <code>AgentApprovalRequiredError</code> before <code>_coerce_output()</code> whenever a structured-output turn pauses on policy confirmation/denial.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Interactive Cross-Run Regression & Quick-Start Explorer -->
+      <section class="section-block">
+        <div class="section-header">
+          <div>
+            <h2 class="section-title">Cross-Run MemoryBundle Diffing &amp; Quick Start</h2>
+            <p class="section-sub">
+              Toggle Run #1 vs Run #2 triage snapshots to inspect deterministic cross-run regression tracking via <code>triage_memory_bundle.json</code>.
+            </p>
+          </div>
+          <span class="badge badge-accent">CORTENSOR PORTAL + OFFLINE CI</span>
+        </div>
+
+        <div class="grid-2">
+          <div>
+            <div class="tab-bar" role="tablist" aria-label="Sample Triage Runs">
+              <button
+                type="button"
+                class="tab-btn active"
+                role="tab"
+                aria-selected="true"
+                data-triage-tab="run1"
+              >
+                Run #1 · Baseline CRITICAL
+              </button>
+              <button
+                type="button"
+                class="tab-btn"
+                role="tab"
+                aria-selected="false"
+                data-triage-tab="run2"
+              >
+                Run #2 · Post-Fix IMPROVED
+              </button>
+            </div>
+
+            <div id="panel-run1" class="triage-panel active" role="tabpanel">
+              <div class="verdict-strip is-err">
+                <strong>Verdict: CRITICAL (Release Blocked)</strong>
+                <span class="mono">trend: "baseline" · 2 findings</span>
+              </div>
+              <pre class="code-box">{
+  "verdict": "CRITICAL",
+  "secret_leaks": ["config/dev.env:3 (synthetic API key)"],
+  "specialist_handoff": {
+    "agent": "security_specialist",
+    "dockerfile_unpinned": ["Dockerfile:1 FROM python:latest"]
+  },
+  "memory_bundle": {
+    "saved": ".sentinel-state/triage_memory_bundle.json",
+    "diff_from_previous": { "trend": "baseline", "new_secrets": 1 }
+  }
+}</pre>
+            </div>
+
+            <div id="panel-run2" class="triage-panel" role="tabpanel">
+              <div class="verdict-strip is-ok">
+                <strong>Verdict: PASS (Release Ready)</strong>
+                <span class="mono">trend: "improved" · 0 leaks</span>
+              </div>
+              <pre class="code-box">{
+  "verdict": "PASS",
+  "secret_leaks": [],
+  "approval_gated_report": {
+    "tool": "write_triage_report",
+    "path_containment": "VERIFIED (scoped_write_root)",
+    "output": "./triage-report.md"
+  },
+  "memory_bundle": {
+    "diff_from_previous": {
+      "trend": "improved",
+      "resolved_secrets": ["config/dev.env:3"],
+      "resolved_gaps": ["Dockerfile:1 unpinned :latest"]
+    }
+  }
+}</pre>
+            </div>
+          </div>
+
+          <div>
+            <div class="cli-header">
+              <span class="cli-label">Run Against Cortensor Portal or Offline E2E Harness</span>
+              <button type="button" class="btn btn-sm" id="btnCopyCli">Copy Commands</button>
+            </div>
+            <pre id="cliSnippet" class="code-box"># 1. Install &amp; run all 11 E2E + SDK bug reproducer tests
+pip install -e .
+PYTHONPATH=src python -m unittest discover -s tests -v
+
+# 2. Live Cortensor Portal run (oss-20b, streaming + MemoryBundle)
+export CORTENSOR_API_KEY="&lt;your-key&gt;"
+repo-sentinel . --provider cortensor-portal --model oss-20b \
+  --state-dir ./.sentinel-state --report-out ./triage.md \
+  --auto-approve --stream
+
+# 3. Deterministic offline E2E demo (zero API key required)
+repo-sentinel . --demo-local --state-dir ./.sentinel-state --stream</pre>
+          </div>
+        </div>
+      </section>
+
+      <footer class="footer">
+        <div>
+          <strong>RepoTriageSentinel v2.0.0</strong> — Cortensor Hackathon #5 · Built natively on OpenMinion 0.1.24 · MIT License
+        </div>
+        <div class="mono">
+          <a href="https://github.com/LHorTL/openminion-repo-sentinel" target="_blank" rel="noopener noreferrer">Repo</a> ·
+          <a href="https://github.com/openminion/openminion/pull/862" target="_blank" rel="noopener noreferrer">#862</a> ·
+          <a href="https://github.com/openminion/openminion/pull/863" target="_blank" rel="noopener noreferrer">#863</a> ·
+          <a href="https://github.com/openminion/openminion/pull/864" target="_blank" rel="noopener noreferrer">#864</a>
+        </div>
+      </footer>
+    </div>
+
+    <script>
+      (function () {
+        const tabs = document.querySelectorAll("[data-triage-tab]");
+        tabs.forEach((btn) => {
+          btn.addEventListener("click", () => {
+            const target = btn.dataset.triageTab;
+            tabs.forEach((b) => {
+              const active = b.dataset.triageTab === target;
+              b.classList.toggle("active", active);
+              b.setAttribute("aria-selected", String(active));
+            });
+            document.querySelectorAll(".triage-panel").forEach((p) => {
+              p.classList.toggle("active", p.id === `panel-${target}`);
+            });
+          });
+        });
+
+        const playBtn = document.getElementById("btnPlayDemo");
+        const videoStage = document.getElementById("videoStage");
+        if (playBtn && videoStage) {
+          playBtn.addEventListener("click", () => {
+            const video = document.createElement("video");
+            video.id = "demoVideo";
+            video.controls = true;
+            video.autoplay = true;
+            video.playsInline = true;
+
+            const localSrc = document.createElement("source");
+            localSrc.src = "./repotriagesentinel-v2-demo.mp4";
+            localSrc.type = "video/mp4";
+
+            const releaseSrc = document.createElement("source");
+            releaseSrc.src =
+              "https://github.com/LHorTL/openminion-repo-sentinel/releases/download/v2.0.0/repotriagesentinel-v2-demo.mp4";
+            releaseSrc.type = "video/mp4";
+
+            video.appendChild(localSrc);
+            video.appendChild(releaseSrc);
+            videoStage.replaceChildren(video);
+          });
+        }
+
+        const copyBtn = document.getElementById("btnCopyCli");
+        const cliBox = document.getElementById("cliSnippet");
+        if (copyBtn && cliBox) {
+          copyBtn.addEventListener("click", async () => {
+            try {
+              await navigator.clipboard.writeText(cliBox.textContent || "");
+              copyBtn.textContent = "Copied";
+              setTimeout(() => {
+                copyBtn.textContent = "Copy Commands";
+              }, 2000);
+            } catch {
+              copyBtn.textContent = "Select & Copy";
+            }
+          });
+        }
+      })();
+    </script>
+  </body>
+</html>
