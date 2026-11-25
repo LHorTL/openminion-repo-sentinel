@@ -57,7 +57,7 @@ Every finding below was empirically reproduced against unmodified **`openminion=
   ```text
   [] {'tool_call_source': 'none', 'tool_call_native_call_count': 0, 'tool_call_attempted_fallback_sources': [], 'tool_call_skipped_fallback_sources': ['choice.text']}
   ```
-- **Ready-to-Apply Patch & Live Upstream PR**: [`patches/0001-cortensor-enable-fallback-tool-calls-and-http-reuse.patch`](./patches/0001-cortensor-enable-fallback-tool-calls-and-http-reuse.patch) — **Submitted upstream: [OpenMinion/openminion#862](https://github.com/openminion/openminion/pull/862)** (red-first proof + 4 unit tests + `169 passed` on `dev`).
+- **Ready-to-Apply Patch & Live Upstream PR**: [`patches/0001-cortensor-enable-fallback-tool-calls-and-http-reuse.patch`](./patches/0001-cortensor-enable-fallback-tool-calls-and-http-reuse.patch) — **Submitted upstream: [OpenMinion/openminion#862](https://github.com/openminion/openminion/pull/862)** (`Source accepted` by `@wireindevice`, `18/18` CI green, red-first proof + 4 unit tests + `169 passed` on `dev`).
 
 ---
 
@@ -94,7 +94,7 @@ Every finding below was empirically reproduced against unmodified **`openminion=
   RuntimeError: inbound authenticity denied (reason=invalid_channel, mode=warn)
   ```
   (Reproduced automatically in `tests/test_sentinel.py::test_repro_programmatic_from_config_missing_default_channel_bug`.)
-- **Ready-to-Apply Patch & Live Upstream PR**: [`patches/0004-config-default-channel-and-wheel-doc-url.patch`](./patches/0004-config-default-channel-and-wheel-doc-url.patch) — **Submitted upstream (`default_channel="console"`): [OpenMinion/openminion#864](https://github.com/openminion/openminion/pull/864)** (red-first proof + 2 regression tests + `85 passed` on `dev`).
+- **Ready-to-Apply Patch & Live Upstream PR**: [`patches/0004-config-default-channel-and-wheel-doc-url.patch`](./patches/0004-config-default-channel-and-wheel-doc-url.patch) — **Submitted upstream (`default_channel="console"`): [OpenMinion/openminion#864](https://github.com/openminion/openminion/pull/864)** (`Source accepted` by `@wireindevice`, `18/18` CI green, red-first proof + 2 regression tests + `85 passed` on `dev`).
 
 ---
 
@@ -105,7 +105,7 @@ Every finding below was empirically reproduced against unmodified **`openminion=
 - **Actual Result on Windows 11** (verified on fresh `openminion config init` followed by `openminion doctor --json` — exit code `0`, `summary.ok=True`, `warn=6`):
   1. **3 Windows false positives**: `security.filesystem.config_permissions` (`0o666`), `security.filesystem.storage_permissions` (`0o777`), and `security.filesystem.memory_permissions` (`0o777`) all fire `"Path is world-writable"` with remediation `"Restrict permissions (for example chmod 750 on dirs, 640 on files)."` because CPython on Windows synthesizes `st_mode` from the DOS read-only bit, never NTFS ACLs.
   2. **Fresh identity warning**: `identity.bundle` immediately emits `status="warn"` (`"Identity profile is missing in IdentityCtl for agent 'openminion'."`) with `details.bundle_diagnostics.errors: ["identity bundle root not found: ..."]` even right after `openminion config init`.
-- **Ready-to-Apply Patch & Live Upstream PR**: [`patches/0003-policy-windows-skip-posix-world-writable-check.patch`](./patches/0003-policy-windows-skip-posix-world-writable-check.patch) — **Submitted upstream: [OpenMinion/openminion#863](https://github.com/openminion/openminion/pull/863)** (red-first proof + 3 cross-platform unit tests + `48 passed` on `dev`).
+- **Ready-to-Apply Patch & Live Upstream PR**: [`patches/0003-policy-windows-skip-posix-world-writable-check.patch`](./patches/0003-policy-windows-skip-posix-world-writable-check.patch) — **Submitted upstream: [OpenMinion/openminion#863](https://github.com/openminion/openminion/pull/863)** (`Source accepted` by `@wireindevice`, `18/18` CI green, red-first proof + 3 cross-platform unit tests + `48 passed` on `dev`).
 
 ---
 
