@@ -3,10 +3,10 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>RepoTriageSentinel v2.0.0 — OpenMinion 0.1.24 Multi-Agent Release Triage | Cortensor #5</title>
+    <title>OpenMinion 0.1.24 Fix PRs (#862–#864) &amp; RepoTriageSentinel v2.0.0 | Cortensor #5</title>
     <meta
       name="description"
-      content="Multi-Agent Git Release-Readiness, Secret-Leak & Cross-Run Regression Triage Agent built on OpenMinion 0.1.24 for Cortensor Hackathon #5."
+      content="3 source-accepted upstream Fix PRs on OpenMinion/openminion (#862, #863, #864) plus RepoTriageSentinel v2.0.0: OpenMinion 0.1.24 runtime-backed offline deterministic triage harness for Cortensor Hackathon #5."
     />
     <link rel="stylesheet" href="./styles.css" />
   </head>
@@ -18,11 +18,11 @@
           <div class="brand-accent-bar" aria-hidden="true"></div>
           <div>
             <h1 class="brand-title">
-              RepoTriageSentinel
-              <span class="badge badge-accent mono">v2.0.0 · openminion==0.1.24</span>
+              OpenMinion Fix PRs &amp; RepoTriageSentinel
+              <span class="badge badge-accent mono">openminion==0.1.24 · v2.0.0</span>
             </h1>
             <p class="brand-sub">
-              Multi-Agent Git Release-Readiness, Secret-Leak &amp; Cross-Run Regression Triage Agent · Cortensor Hackathon #5
+              3 Source-Accepted Upstream Fix PRs (#862–#864) + Runtime-Backed Multi-Agent Triage Harness · Cortensor Hackathon #5
             </p>
           </div>
         </div>
@@ -55,17 +55,12 @@
         </div>
       </header>
 
-      <!-- Unified Hairline KPI Strip -->
+      <!-- Unified Hairline KPI Strip (Upstream Fix PRs First) -->
       <section class="kpi-grid" aria-label="Verification Metrics">
         <div class="kpi-cell">
-          <div class="kpi-label">Automated E2E Suite</div>
-          <div class="kpi-value">11 / 11 PASS</div>
-          <div class="kpi-sub">unittest · policy + handoff + MemoryBundle</div>
-        </div>
-        <div class="kpi-cell">
           <div class="kpi-label">Upstream OpenMinion PRs</div>
-          <div class="kpi-value">3 Live PRs</div>
-          <div class="kpi-sub">#862 · #863 · #864 (18/18 CI green)</div>
+          <div class="kpi-value">3 / 3 Accepted</div>
+          <div class="kpi-sub">#862 · #863 · #864 (@wireindevice · 18/18 CI)</div>
         </div>
         <div class="kpi-cell">
           <div class="kpi-label">SDK Audit &amp; Patches</div>
@@ -73,22 +68,141 @@
           <div class="kpi-sub">git apply --check + py_compile verified</div>
         </div>
         <div class="kpi-cell">
-          <div class="kpi-label">Tool Privilege Model</div>
-          <div class="kpi-value">Least-Privilege</div>
-          <div class="kpi-sub">5 READ_ONLY · 1 approval-gated write</div>
+          <div class="kpi-label">Automated E2E Suite</div>
+          <div class="kpi-value">11 / 11 PASS</div>
+          <div class="kpi-sub">unittest · OpenMinion 0.1.24 runtime-backed</div>
+        </div>
+        <div class="kpi-cell">
+          <div class="kpi-label">Demo &amp; Inference Mode</div>
+          <div class="kpi-value">Offline + BYOK</div>
+          <div class="kpi-sub">Deterministic harness · CORTENSOR_API_KEY ready</div>
         </div>
       </section>
 
-      <!-- HD Demo Walkthrough & Architecture -->
-      <section class="section-block">
+      <!-- SECTION 1 (FIRST FOLD): 3 Accepted Upstream Fix PRs & Verified SDK Patch Archive -->
+      <section class="section-block" aria-labelledby="sec-upstream-prs">
         <div class="section-header">
           <div>
-            <h2 class="section-title">HD Walkthrough Demo &amp; OpenMinion 0.1.24 Runtime Pipeline</h2>
+            <h2 id="sec-upstream-prs" class="section-title">
+              1. Accepted Upstream Fix PRs on OpenMinion/openminion &amp; SDK Patch Archive
+            </h2>
             <p class="section-sub">
-              Real programmatic <code>APIRuntime</code>, streaming <code>run_stream()</code>, peer <code>Handoff</code>, bounded <code>subagent()</code>, and cross-run <code>MemoryBundle</code> persistence.
+              Targeting the <strong>Bug Report / Fix PR Bonus</strong>: 3 source-verified root-cause fixes on <code>openminion==0.1.24</code> — PRs <code>#862</code>, <code>#863</code>, and <code>#864</code> are all <code>Source accepted</code> by <code>@wireindevice</code> with <code>18/18</code> CI checks green.
             </p>
           </div>
-          <span class="badge badge-ok">1280×720 H.264 LIVE</span>
+          <span class="badge badge-ok">3 / 3 SOURCE ACCEPTED · 18/18 CI</span>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Upstream PR / Patch</th>
+                <th>Severity</th>
+                <th>Upstream Status</th>
+                <th>Target Module</th>
+                <th>Upstream Tests</th>
+                <th>Root-Cause Fix Summary</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="mono">
+                  <a href="https://github.com/openminion/openminion/pull/862" target="_blank" rel="noopener noreferrer">
+                    PR #862 ↗
+                  </a>
+                  · Patch 0001
+                </td>
+                <td><span class="badge badge-err">S-TIER · CORTENSOR</span></td>
+                <td><span class="badge badge-ok">Source accepted · 18/18 CI</span></td>
+                <td><code>cortensor/adapter.py</code></td>
+                <td class="mono">169 passed</td>
+                <td class="wrap-cell">
+                  Replaces hardcoded <code>fallback_enabled=False</code> (:470) with <code>supports_fallback_tool_calling()</code> so Cortensor <code>/api/v2/completions</code> tool calls parse; restores <code>http_client</code> reuse (:261–279).
+                </td>
+              </tr>
+              <tr>
+                <td class="mono">
+                  <a href="https://github.com/openminion/openminion/pull/863" target="_blank" rel="noopener noreferrer">
+                    PR #863 ↗
+                  </a>
+                  · Patch 0003
+                </td>
+                <td><span class="badge badge-warn">A-TIER · WINDOWS</span></td>
+                <td><span class="badge badge-ok">Source accepted · 18/18 CI</span></td>
+                <td><code>policy/diagnostics/security.py</code></td>
+                <td class="mono">48 passed</td>
+                <td class="wrap-cell">
+                  Skips POSIX <code>stat.S_IWOTH</code> checks on Windows (<code>os.name == "nt"</code>), eliminating 3 false-positive world-writable <code>openminion doctor</code> warnings.
+                </td>
+              </tr>
+              <tr>
+                <td class="mono">
+                  <a href="https://github.com/openminion/openminion/pull/864" target="_blank" rel="noopener noreferrer">
+                    PR #864 ↗
+                  </a>
+                  · Patch 0004
+                </td>
+                <td><span class="badge badge-warn">A-TIER · CONFIG DX</span></td>
+                <td><span class="badge badge-ok">Source accepted · 18/18 CI</span></td>
+                <td><code>base/config/core.py</code></td>
+                <td class="mono">85 passed</td>
+                <td class="wrap-cell">
+                  Defaults <code>AgentProfileConfig.default_channel</code> to <code>"console"</code>, preventing turn-1 <code>inbound authenticity denied</code> under programmatic <code>APIRuntime.from_config()</code>.
+                </td>
+              </tr>
+              <tr>
+                <td class="mono">
+                  <a href="https://github.com/LHorTL/openminion-repo-sentinel/tree/main/patches" target="_blank" rel="noopener noreferrer">
+                    Patch 0002 ↗
+                  </a>
+                </td>
+                <td><span class="badge badge-err">S-TIER · SDK CORE</span></td>
+                <td><span class="badge badge-neutral">Patch archive · git apply OK</span></td>
+                <td><code>api/agent.py, handoff.py</code></td>
+                <td class="mono">Repro in suite</td>
+                <td class="wrap-cell">
+                  Fails fast when shared-runtime Handoff targets declare temp <code>@tool</code>s and forwards <code>approval_callback</code>, <code>timeout_seconds</code>, <code>cancel_event</code>, and <code>on_delta</code>.
+                </td>
+              </tr>
+              <tr>
+                <td class="mono">
+                  <a href="https://github.com/LHorTL/openminion-repo-sentinel/tree/main/patches" target="_blank" rel="noopener noreferrer">
+                    Patch 0005 ↗
+                  </a>
+                </td>
+                <td><span class="badge badge-neutral">A-TIER · TYPED API</span></td>
+                <td><span class="badge badge-neutral">Patch archive · git apply OK</span></td>
+                <td><code>api/agent.py</code></td>
+                <td class="mono">Repro in suite</td>
+                <td class="wrap-cell">
+                  Raises typed <code>AgentApprovalRequiredError</code> before <code>_coerce_output()</code> whenever a structured-output turn pauses on policy confirmation/denial.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- SECTION 2: RepoTriageSentinel Offline Deterministic Demo Harness & Runtime Pipeline -->
+      <section class="section-block" aria-labelledby="sec-harness">
+        <div class="section-header">
+          <div>
+            <h2 id="sec-harness" class="section-title">
+              2. RepoTriageSentinel v2.0.0 — Offline Deterministic Demo Harness &amp; Runtime Pipeline
+            </h2>
+            <p class="section-sub">
+              <strong>OpenMinion 0.1.24 runtime-backed; offline deterministic demo harness.</strong> Exercises programmatic <code>APIRuntime</code>, <code>run_stream()</code>, peer <code>Handoff</code>, bounded <code>subagent()</code>, and <code>MemoryBundle</code> persistence locally; live Cortensor Portal / Router endpoints are supported via <code>CORTENSOR_API_KEY</code>.
+            </p>
+          </div>
+          <span class="badge badge-accent">RUNTIME-BACKED · OFFLINE DEMO</span>
+        </div>
+
+        <div class="disclosure-strip" role="note">
+          <span class="badge badge-neutral mono">EXECUTION MODE</span>
+          <span>
+            Bundled 78s video &amp; <code>11/11</code> tests execute the unmodified <code>openminion==0.1.24</code> runtime against a local deterministic OpenAI-compatible server (<code>--demo-local</code>) so judges can verify every flow with zero API keys. Set <code>CORTENSOR_API_KEY</code> to target live Cortensor endpoints.
+          </span>
         </div>
 
         <div class="grid-2">
@@ -108,7 +222,7 @@
                 </span>
                 <span class="poster-title">Click to Play 78s HD Walkthrough</span>
                 <span class="poster-sub mono">
-                  Live OpenMinion 0.1.24 Handoff · MemoryBundle Cross-Run Diff · 11/11 Tests PASS
+                  OpenMinion 0.1.24 Runtime · Offline Deterministic Demo Harness · 11/11 Tests PASS
                 </span>
               </button>
             </div>
@@ -165,113 +279,16 @@
         </div>
       </section>
 
-      <!-- Live Upstream Fix PRs & Verified SDK Patches -->
-      <section class="section-block">
+      <!-- SECTION 3: Interactive Cross-Run Regression & Quick-Start Explorer -->
+      <section class="section-block" aria-labelledby="sec-diff">
         <div class="section-header">
           <div>
-            <h2 class="section-title">Live Upstream Fix PRs on OpenMinion/openminion &amp; SDK Patch Archive</h2>
-            <p class="section-sub">
-              Source-verified root-cause fixes discovered while building against <code>openminion==0.1.24</code> — all 3 open PRs are <code>MERGEABLE</code> with <code>18/18</code> CI checks green.
-            </p>
-          </div>
-          <span class="badge badge-ok">3 / 3 PRs CI GREEN</span>
-        </div>
-
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th>Upstream PR / Patch</th>
-                <th>Severity</th>
-                <th>Target Module</th>
-                <th>Upstream Tests</th>
-                <th>Root-Cause Fix Summary</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td class="mono">
-                  <a href="https://github.com/openminion/openminion/pull/862" target="_blank" rel="noopener noreferrer">
-                    PR #862 ↗
-                  </a>
-                  · Patch 0001
-                </td>
-                <td><span class="badge badge-err">S-TIER · CORTENSOR</span></td>
-                <td><code>cortensor/adapter.py</code></td>
-                <td class="mono">169 passed</td>
-                <td class="wrap-cell">
-                  Replaces hardcoded <code>fallback_enabled=False</code> (:470) with <code>supports_fallback_tool_calling()</code> so Cortensor <code>/api/v2/completions</code> tool calls parse; adds <code>http_client</code> reuse (:261–279).
-                </td>
-              </tr>
-              <tr>
-                <td class="mono">
-                  <a href="https://github.com/openminion/openminion/pull/863" target="_blank" rel="noopener noreferrer">
-                    PR #863 ↗
-                  </a>
-                  · Patch 0003
-                </td>
-                <td><span class="badge badge-warn">A-TIER · WINDOWS</span></td>
-                <td><code>policy/diagnostics/security.py</code></td>
-                <td class="mono">48 passed</td>
-                <td class="wrap-cell">
-                  Skips POSIX <code>stat.S_IWOTH</code> checks on Windows (<code>os.name == "nt"</code>), eliminating 3 false-positive world-writable <code>openminion doctor</code> warnings.
-                </td>
-              </tr>
-              <tr>
-                <td class="mono">
-                  <a href="https://github.com/openminion/openminion/pull/864" target="_blank" rel="noopener noreferrer">
-                    PR #864 ↗
-                  </a>
-                  · Patch 0004
-                </td>
-                <td><span class="badge badge-warn">A-TIER · CONFIG DX</span></td>
-                <td><code>base/config/core.py</code></td>
-                <td class="mono">85 passed</td>
-                <td class="wrap-cell">
-                  Defaults <code>AgentProfileConfig.default_channel</code> to <code>"console"</code>, preventing turn-1 <code>inbound authenticity denied</code> under programmatic <code>APIRuntime.from_config()</code>.
-                </td>
-              </tr>
-              <tr>
-                <td class="mono">
-                  <a href="https://github.com/LHorTL/openminion-repo-sentinel/tree/main/patches" target="_blank" rel="noopener noreferrer">
-                    Patch 0002 ↗
-                  </a>
-                </td>
-                <td><span class="badge badge-err">S-TIER · SDK CORE</span></td>
-                <td><code>api/agent.py, handoff.py</code></td>
-                <td class="mono">git apply OK</td>
-                <td class="wrap-cell">
-                  Fails fast when shared-runtime Handoff targets declare temp <code>@tool</code>s and forwards <code>approval_callback</code>, <code>timeout_seconds</code>, <code>cancel_event</code>, and <code>on_delta</code>.
-                </td>
-              </tr>
-              <tr>
-                <td class="mono">
-                  <a href="https://github.com/LHorTL/openminion-repo-sentinel/tree/main/patches" target="_blank" rel="noopener noreferrer">
-                    Patch 0005 ↗
-                  </a>
-                </td>
-                <td><span class="badge badge-neutral">A-TIER · TYPED API</span></td>
-                <td><code>api/agent.py</code></td>
-                <td class="mono">git apply OK</td>
-                <td class="wrap-cell">
-                  Raises typed <code>AgentApprovalRequiredError</code> before <code>_coerce_output()</code> whenever a structured-output turn pauses on policy confirmation/denial.
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </section>
-
-      <!-- Interactive Cross-Run Regression & Quick-Start Explorer -->
-      <section class="section-block">
-        <div class="section-header">
-          <div>
-            <h2 class="section-title">Cross-Run MemoryBundle Diffing &amp; Quick Start</h2>
+            <h2 id="sec-diff" class="section-title">3. Cross-Run MemoryBundle Diffing &amp; Quick Start</h2>
             <p class="section-sub">
               Toggle Run #1 vs Run #2 triage snapshots to inspect deterministic cross-run regression tracking via <code>triage_memory_bundle.json</code>.
             </p>
           </div>
-          <span class="badge badge-accent">CORTENSOR PORTAL + OFFLINE CI</span>
+          <span class="badge badge-accent">OFFLINE HARNESS + BYOK CORTENSOR</span>
         </div>
 
         <div class="grid-2">
@@ -342,28 +359,28 @@
 
           <div>
             <div class="cli-header">
-              <span class="cli-label">Run Against Cortensor Portal or Offline E2E Harness</span>
+              <span class="cli-label">Run Offline Deterministic Harness or BYOK Cortensor Endpoint</span>
               <button type="button" class="btn btn-sm" id="btnCopyCli">Copy Commands</button>
             </div>
-            <pre id="cliSnippet" class="code-box"># 1. Install &amp; run all 11 E2E + SDK bug reproducer tests
+            <pre id="cliSnippet" class="code-box"># 1. Install &amp; run all 11 tests (offline harness)
 pip install -e .
 PYTHONPATH=src python -m unittest discover -s tests -v
 
-# 2. Live Cortensor Portal run (oss-20b, streaming + MemoryBundle)
+# 2. Offline deterministic demo (zero API key)
+repo-sentinel . --demo-local --state-dir ./.sentinel-state --stream
+
+# 3. Optional BYOK live Cortensor Portal run
 export CORTENSOR_API_KEY="&lt;your-key&gt;"
 repo-sentinel . --provider cortensor-portal --model oss-20b \
   --state-dir ./.sentinel-state --report-out ./triage.md \
-  --auto-approve --stream
-
-# 3. Deterministic offline E2E demo (zero API key required)
-repo-sentinel . --demo-local --state-dir ./.sentinel-state --stream</pre>
+  --auto-approve --stream</pre>
           </div>
         </div>
       </section>
 
       <footer class="footer">
         <div>
-          <strong>RepoTriageSentinel v2.0.0</strong> — Cortensor Hackathon #5 · Built natively on OpenMinion 0.1.24 · MIT License
+          <strong>OpenMinion Fix PRs &amp; RepoTriageSentinel v2.0.0</strong> — Cortensor Hackathon #5 · OpenMinion 0.1.24 Runtime-Backed · MIT License
         </div>
         <div class="mono">
           <a href="https://github.com/LHorTL/openminion-repo-sentinel" target="_blank" rel="noopener noreferrer">Repo</a> ·
